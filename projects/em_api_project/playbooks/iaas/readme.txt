@@ -1,0 +1,13 @@
+1. showcloudstatus.yml      
+2. showzonedetails.yml  
+3. showvmlists.yml    
+4. showtemplatedetails.yml  
+5. deployvm_ol7u2.yml  
+6. checkvmdeploymentstatus.yml
+7. lookupvmid.yml   
+8. showvmdetails.yml  
+9. editvmconfig.yml    
+10. stopvm.yml
+11. startvm.yml
+12. deletevm.yml                 
+13. emcli_basic.yml  

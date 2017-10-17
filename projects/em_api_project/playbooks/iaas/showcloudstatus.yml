@@ -1,0 +1,29 @@
+---
+- hosts: em-ansible-host
+  tasks:
+  - name: show cloud status
+    uri:
+      url: https://em13-test.gdn.aus.osc:7803/em/cloud
+      method: GET
+      return_content: yes
+      user: osc_anz_admin
+      password: welcome1
+      validate_certs: no
+      force_basic_auth: yes
+      body_format: json 
+    register: showcloudstatus
+  - name: show list
+    #debug: var=showcloudstatus
+    #debug: var=showcloudstatus.content
+    #debug: msg="{{ showcloudstatus | to_nice_json(indent=5) }}"
+    #debug: var=showcloudstatus.content.split('\n')
+    debug: 
+      msg: "{{ showcloudstatus.content.split('\n') }}"
+
+  - name: copy output
+    copy:
+      #content: "{{ showcloudstatus.content | to_nice_json }}"
+      #content: "{{ showcloudstatus.content.split('\n') }}"
+      content: >
+        "{{ showcloudstatus.content }}"
+      dest: "/tmp/output_showcloudstatus.txt"

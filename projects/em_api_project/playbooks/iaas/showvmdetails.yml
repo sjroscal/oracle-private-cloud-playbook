@@ -1,0 +1,21 @@
+---
+- hosts: em-ansible-host
+  tasks:
+  - name: check vm status
+    vars:
+      contents: "{{ lookup('file', '/tmp/output_vm_uri.txt') }}"
+
+    uri:
+      url: https://em13-test.gdn.aus.osc:7803{{ contents }}?status,uri,cpu,memory,ip_address
+      method: GET
+      return_content: yes
+      user: osc_anz_admin
+      password: welcome1
+      validate_certs: no
+      force_basic_auth: yes
+      body_format: json 
+    register: checkvmstatus
+  - name: check list
+    #debug: var=checkvmstatus
+    debug: var=checkvmstatus.content
+    #debug: msg="{{ checkvmstatus | to_nice_json(indent=5) }}"

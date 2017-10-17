@@ -1,0 +1,36 @@
+---
+- hosts: em-ansible-host
+  tasks:
+  - name: show vm status
+    vars:
+      contents: "{{ lookup('file', '/tmp/output_deployvm_id.txt') }}"
+
+    uri:
+      url: https://em13-test.gdn.aus.osc:7803/em/cloud/iaas/server/byrequest/{{ contents }}?status,uri
+      method: GET
+      return_content: yes
+      user: osc_anz_admin
+      password: welcome1
+      validate_certs: no
+      force_basic_auth: yes
+      body_format: json 
+    register: showvmstatus
+  - name: show list
+    #debug: var=showvmstatus
+    debug: var=showvmstatus.content
+    #debug: msg="{{ showvmstatus | to_nice_json(indent=5) }}"
+
+  - name: copy output
+    copy:
+      content: >
+        "{{ showvmstatus.content }}"
+      dest: "/tmp/showvmstatus.txt"
+
+  - name: search deployment id
+    shell:
+      /bin/grep uri /tmp/showvmstatus.txt | /usr/bin/awk '{print $3}'| /usr/bin/sed 's/\"//g' > /tmp/output_vm_uri.txt;
+      dockerimg=`/usr/bin/docker ps | /usr/bin/grep nci-ansible-ui | /usr/bin/awk '{print $1}'`;
+      /usr/bin/docker cp /tmp/output_vm_uri.txt ${dockerimg}:/tmp/;
+    args:
+      executable: /bin/bash
+

@@ -1,0 +1,26 @@
+---
+- hosts: em-ansible-host
+  tasks:
+  - name: edit vm config
+    vars:
+      contents: "{{ lookup('file', '/tmp/output_vm_uri.txt') }}"
+
+    uri:
+      url: https://em13-test.gdn.aus.osc:7803{{ contents }}?resource_state
+      method: PUT
+      return_content: yes
+      headers: 
+        Content-Type: application/oracle.com.cloud.common.VM+json
+      user: osc_anz_admin
+      password: welcome1
+      validate_certs: no
+      force_basic_auth: yes
+      body: {"cpu":[4,0],"memory":"4096"}
+      body_format: json 
+    register: output_vmconfig
+  - name: output vmconfig
+    #all works fine
+    debug: var=output_vmconfig
+    #debug: var=output_vmconfig.status
+    #debug: var=output_vmconfig.msg
+    #debug: msg="{{ output_vmconfig }}"

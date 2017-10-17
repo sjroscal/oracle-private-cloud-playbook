@@ -1,0 +1,25 @@
+---
+- hosts: em-ansible-host
+  tasks:
+  - name: show zone status
+    uri:
+      url: https://em13-test.gdn.aus.osc:7803/em/cloud/iaas/zone/6E4E4EF5A015FAD3184B38B7865C0899
+      method: GET
+      return_content: yes
+      user: osc_anz_admin
+      password: welcome1
+      validate_certs: no
+      force_basic_auth: yes
+      body_format: json 
+    register: showzonestatus
+  - name: show list
+    #debug: var=showzonestatus
+    debug: var=showzonestatus.content
+    #debug: msg="{{ showzonestatus | to_nice_json(indent=5) }}"
+
+  - name: copy output
+    copy:
+      #content: "{{ showzonestatus.content.split('\n') }}"
+      content: >
+        "{{ showzonestatus.content }}"
+      dest: "/tmp/output_showzonestatus.txt"

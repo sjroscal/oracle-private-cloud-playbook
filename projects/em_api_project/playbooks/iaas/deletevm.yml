@@ -1,0 +1,21 @@
+---
+- hosts: em-ansible-host
+  tasks:
+  - name: delete vm
+    vars:
+      contents: "{{ lookup('file', '/tmp/output_vm_uri.txt') }}"
+
+    uri:
+      url: https://em13-test.gdn.aus.osc:7803{{ contents }}
+      method: DELETE
+      return_content: yes
+      user: osc_anz_admin
+      password: welcome1
+      validate_certs: no
+      force_basic_auth: yes
+      body_format: json 
+    register: output_delete_vm
+  - name: output delete vm
+    #detail output
+    #debug: var=output_delete_vm.content
+    debug: var=output_delete_vm

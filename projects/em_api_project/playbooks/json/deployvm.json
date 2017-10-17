@@ -1,0 +1,9 @@
+{
+"zone":"/em/cloud/iaas/zone/6E4E4EF5A015FAD3184B38B7865C0899",
+"cpu":[2,0],"memory":"2048",
+"params":{
+	"vnc_password":"welcome1",
+	"root_password":"welcome1",
+	"assembly_instance_name": "curltest6"
+}
+}

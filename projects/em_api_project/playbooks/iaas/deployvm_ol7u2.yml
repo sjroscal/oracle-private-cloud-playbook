@@ -1,0 +1,34 @@
+---
+- hosts: em-ansible-host
+  tasks:
+  - name: deploy ol7u2 vm
+    uri:
+      url: https://em13-test.gdn.aus.osc:7803/em/cloud/iaas/servicetemplate/vm/oracle%3AdefaultService%3Aem%3Aprovisioning%3A1%3Acmp%3AVirtualization%3ATemplate%3A5B66C83C8033029EE05335D6538CF92B%3A0.1
+      method: POST
+      return_content: yes
+      headers: 
+        Content-Type: "application/oracle.com.cloud.common.VM+json"
+      user: osc_anz_admin
+      password: welcome1
+      validate_certs: no
+      force_basic_auth: yes
+      body: {"zone":"/em/cloud/iaas/zone/6E4E4EF5A015FAD3184B38B7865C0899","cpu":[2,0],"memory":"2048","params":{"vnc_password":"welcome1","root_password":"welcome1","server_prefix": "ol7u2"}}
+      body_format: json 
+    register: output_deployvm
+  - name: output deployvm
+    debug: var=output_deployvm
+
+  - name: copy output
+    copy:
+      #content: "{{ output_deployvm.content.split('\n') }}"
+      content: >
+        "{{ output_deployvm.content }}"
+      dest: "/tmp/output_deployvmstatus.txt"
+
+  - name: search deployment id
+    shell:
+      /bin/grep context_id /tmp/output_deployvmstatus.txt | /usr/bin/awk '{print $3}'| /usr/bin/sed 's/\"//g' > /tmp/output_deployvm_id.txt;
+      dockerimg=`/usr/bin/docker ps | /usr/bin/grep nci-ansible-ui | /usr/bin/awk '{print $1}'`;
+      /usr/bin/docker cp /tmp/output_deployvm_id.txt ${dockerimg}:/tmp/ ;
+    args:
+      executable: /bin/bash

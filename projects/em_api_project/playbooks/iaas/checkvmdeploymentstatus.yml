@@ -1,0 +1,22 @@
+---
+- hosts: em-ansible-host
+  tasks:
+  - name: show vm status
+    vars:
+      contents: "{{ lookup('file', '/tmp/output_deployvm_id.txt') }}"
+
+    uri:
+      #url: https://em13-test.gdn.aus.osc:7803/em/cloud/iaas/server/byrequest/{{ contents }}?status,uri
+      url: https://em13-test.gdn.aus.osc:7803/em/cloud/iaas/server/byrequest/{{ contents }}
+      method: GET
+      return_content: yes
+      user: osc_anz_admin
+      password: welcome1
+      validate_certs: no
+      force_basic_auth: yes
+      body_format: json 
+    register: checkvmdeploymentstatus
+  - name: show list
+    #debug: var=checkvmdeploymentstatus
+    debug: var=checkvmdeploymentstatus.content
+    #debug: msg="{{ checkvmdeploymentstatus | to_nice_json(indent=5) }}"

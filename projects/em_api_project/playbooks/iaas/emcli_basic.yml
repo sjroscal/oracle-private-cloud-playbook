@@ -1,0 +1,16 @@
+---
+- name: login emcli and display named credentials
+  hosts: em-ansible-host
+  user: root
+  tasks:
+  - name: login emcli
+    command: sh /srv/oracle-private-cloud-playbook/projects/em_api_project/playbooks/emcli/emcli_login.sh
+    register: emcli_login_output
+  - name: emcli login output
+    debug: var=emcli_login_output.stdout_lines
+
+  - name: show named credentials
+    command: sh /srv/oracle-private-cloud-playbook/projects/em_api_project/playbooks/emcli/show_named_credentials.sh
+    register: emcli_show_named_credentials
+  - name: emcli show named credentials
+    debug: var=emcli_show_named_credentials.stdout_lines

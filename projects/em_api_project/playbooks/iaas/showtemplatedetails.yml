@@ -1,0 +1,23 @@
+---
+- hosts: em-ansible-host
+  tasks:
+  - name: show zone status
+    uri:
+      url: https://em13-test.gdn.aus.osc:7803/em/cloud/iaas/zone/6E4E4EF5A015FAD3184B38B7865C0899?service_templates
+      method: GET
+      return_content: yes
+      user: osc_anz_admin
+      password: welcome1
+      validate_certs: no
+      force_basic_auth: yes
+      body_format: json 
+    register: showtemplatestatus
+  - name: show list
+    #debug: var=showtemplatestatus
+    debug: var=showtemplatestatus.content
+
+  - name: copy output
+    copy:
+      content: >
+        "{{ showtemplatestatus.content }}"
+      dest: "/tmp/output_showtemplatestatus.txt"
