@@ -1,0 +1,24 @@
+---
+- hosts: ovmm-ansible-host
+  tasks:
+  - name: assign vm to server pool
+#    vars:
+#      contents: "{{ lookup('file', '/tmp/output_ovmm_deployvm_vmid.txt') }}"
+
+    uri:
+      url: https://ovmm-test.gdn.aus.osc:7002/ovm/core/wsapi/rest/ServerPool/0004fb0000020000e8d2ef582967e70f/addVm
+      method: PUT
+      headers: 
+        Content-Type: "application/json"
+        Accept: "application/json"
+      return_content: yes
+      user: admin
+      password: Welcome1
+      validate_certs: no
+      force_basic_auth: yes
+      body_format: json 
+      body: "{{ lookup('file', '/tmp/output_ovmm_vmid_dic.txt') }}"
+      status_code: 201
+    register: assignvmtoserverpool
+  - name: show status
+    debug: var=assignvmtoserverpool.json

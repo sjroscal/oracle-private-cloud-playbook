@@ -1,0 +1,39 @@
+---
+- hosts: ovmm-ansible-host
+  tasks:
+  - name: show job status
+    vars:
+      contents: "{{ lookup('file', '/tmp/output_ovmm_jobid.txt') }}"
+
+    uri:
+      url: https://ovmm-test.gdn.aus.osc:7002/ovm/core/wsapi/rest/Job/{{ contents }}
+      method: GET
+      headers: 
+        Content-Type: "application/json"
+        Accept: "application/json"
+      return_content: yes
+      user: admin
+      password: Welcome1
+      validate_certs: no
+      force_basic_auth: yes
+      body_format: json 
+    register: checkjobstatus
+  - name: show list
+    debug: var=checkjobstatus.json
+
+  - name: copy vm id
+    copy:
+      content: >
+        "{{ checkjobstatus.json.resultId | to_nice_json() }}"
+      dest: "/tmp/output_ovmm_vmid_org.txt"
+
+  - name: search deployment id
+    shell:
+      cat /tmp/output_ovmm_vmid_org.txt | /usr/bin/sed 's/\"{/{/g' | /usr/bin/sed 's/}\"/}/g'  > /tmp/output_ovmm_vmid_dic.txt;
+      /usr/bin/grep value /tmp/output_ovmm_vmid_dic.txt | /usr/bin/awk '{print $2}' | /usr/bin/sed 's/\"//g' > /tmp/output_ovmm_vmid.txt;
+      dockerimg=`/usr/bin/docker ps | /usr/bin/grep nci-ansible-ui | /usr/bin/awk '{print $1}'`;
+      /usr/bin/docker cp /tmp/output_ovmm_vmid_dic.txt ${dockerimg}:/tmp/ ;
+      /usr/bin/docker cp /tmp/output_ovmm_vmid.txt ${dockerimg}:/tmp/ ;
+    args:
+      executable: /bin/bash
+

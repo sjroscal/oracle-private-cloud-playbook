@@ -1,0 +1,24 @@
+---
+- hosts: ovmm-ansible-host
+  tasks:
+  - name: add vnic to vm
+    vars:
+      contents: "{{ lookup('file', '/tmp/output_ovmm_vmid.txt') }}"
+
+    uri:
+      url: https://ovmm-test.gdn.aus.osc:7002/ovm/core/wsapi/rest/Vm/{{ contents }}/VirtualNic
+      method: POST
+      headers: 
+        Content-Type: "application/json"
+        Accept: "application/json"
+      return_content: yes
+      user: admin
+      password: Welcome1
+      validate_certs: no
+      force_basic_auth: yes
+      body_format: json 
+      body: {"networkId":{"type":"com.oracle.ovm.mgr.ws.model.Network","value":"10b8521c2c","uri":"https://ovmm-test.gdn.aus.osc:7002/ovm/core/wsapi/rest/Network/10b8521c2c","name":"ICN - vlan70"}}
+      status_code: 201
+    register: addvnictovm
+  - name: show status
+    debug: var=addvnictovm.json

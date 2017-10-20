@@ -1,0 +1,24 @@
+---
+- hosts: ovmm-ansible-host
+  tasks:
+  - name: show job status
+    vars:
+      vmid: "{{ lookup('file', '/tmp/output_ovmm_vmid.txt') }}"
+      vnicid: "{{ lookup('file', '/tmp/output_ovmm_vnicid.txt') }}"
+
+    uri:
+      url: https://ovmm-test.gdn.aus.osc:7002/ovm/core/wsapi/rest/Vm/{{ vmid }}/VirtualNic/{{ vnicid }}
+      method: DELETE
+      headers: 
+        Content-Type: "application/json"
+        Accept: "application/json"
+      return_content: yes
+      user: admin
+      password: Welcome1
+      validate_certs: no
+      force_basic_auth: yes
+      body_format: json 
+      status_code: 200,201
+    register: deletevnic
+  - name: show output
+    debug: var=deletevnic

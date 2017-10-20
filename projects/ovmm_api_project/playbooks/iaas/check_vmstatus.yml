@@ -1,0 +1,22 @@
+---
+- hosts: ovmm-ansible-host
+  tasks:
+  - name: show job status
+    vars:
+      contents: "{{ lookup('file', '/tmp/output_ovmm_vmid.txt') }}"
+
+    uri:
+      url: https://ovmm-test.gdn.aus.osc:7002/ovm/core/wsapi/rest/Vm/{{ contents }}
+      method: GET
+      headers: 
+        Content-Type: "application/json"
+        Accept: "application/json"
+      return_content: yes
+      user: admin
+      password: Welcome1
+      validate_certs: no
+      force_basic_auth: yes
+      body_format: json 
+    register: checkvmstatus
+  - name: show list
+    debug: var=checkvmstatus.json.vmRunState

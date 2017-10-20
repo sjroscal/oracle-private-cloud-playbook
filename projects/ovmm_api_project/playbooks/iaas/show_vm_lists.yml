@@ -1,0 +1,19 @@
+---
+- hosts: ovmm-ansible-host
+  tasks:
+  - name: show vm lists status
+    uri:
+      url: https://ovmm-test.gdn.aus.osc:7002/ovm/core/wsapi/rest/Vm/id
+      method: GET
+      headers: 
+        Content-Type: "application/json"
+        Accept: "application/json"
+      return_content: yes
+      user: admin
+      password: Welcome1
+      validate_certs: no
+      force_basic_auth: yes
+      body_format: json 
+    register: showvmlists
+  - name: show list
+    debug: var=showvmlists.json

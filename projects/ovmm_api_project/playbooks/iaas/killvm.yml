@@ -1,0 +1,23 @@
+---
+- hosts: ovmm-ansible-host
+  tasks:
+  - name: kill vm
+    vars:
+      contents: "{{ lookup('file', '/tmp/output_ovmm_vmid.txt') }}"
+
+    uri:
+      url: https://ovmm-test.gdn.aus.osc:7002/ovm/core/wsapi/rest/Vm/{{ contents }}/kill
+      method: PUT
+      headers: 
+        Content-Type: "application/json"
+        Accept: "application/json"
+      return_content: yes
+      user: admin
+      password: Welcome1
+      validate_certs: no
+      force_basic_auth: yes
+      body_format: json 
+      status_code: 200,201
+    register: killvm
+  - name: show status
+    debug: var=killvm.json

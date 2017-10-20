@@ -1,0 +1,33 @@
+---
+- hosts: em-ansible-host
+  tasks:
+  - name: show ovmm status
+    uri:
+      url: https://ovmm-test.gdn.aus.osc:7002/ovm/core/wsapi/rest/Manager
+      method: GET
+      headers: 
+        Content-Type: "application/json"
+        Accept: "application/json"
+      return_content: yes
+      user: admin
+      password: Welcome1
+      validate_certs: no
+      force_basic_auth: yes
+      body_format: json 
+    register: showovmmstatus
+  - name: show ovmm status output
+#    debug: 
+#      msg: "{{ showovmmstatus.content.split('\n') }}"
+    #debug: var=showovmmstatus
+    #debug: var=showovmmstatus.content
+    debug: msg="{{ showovmmstatus.json | to_nice_json(indent=5) }}"
+    #debug: var=showovmmstatus.content.split('\n')
+
+
+  - name: copy output
+    copy:
+      #content: "{{ showovmmstatus.content | to_nice_json }}"
+      #content: "{{ showovmmstatus.content.split('\n') }}"
+      content: >
+        "{{ showovmmstatus.json | to_nice_json(indent=5) }}"
+      dest: "/tmp/output_showovmmstatus.txt"
