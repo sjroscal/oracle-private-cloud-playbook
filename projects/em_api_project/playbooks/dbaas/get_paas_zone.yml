@@ -1,0 +1,35 @@
+---
+- hosts: em-ansible-host
+  tasks:
+  - name: get resourceprovider id for paas zone 
+    uri:
+      url: https://osc-em13.oda.aus.osc:7802/em/websvcs/restful/extws/cloudservices/admin/cfw/v2/resourceproviders?type=self_service_zone
+      method: GET
+      return_content: yes
+      user: osc_exadata_admin
+      password: welcome1
+      validate_certs: no
+      force_basic_auth: yes
+      body_format: json 
+    register: paas_zone
+  - name: show list
+    #debug: var=paas_zone
+    debug: msg="{{ paas_zone.json | to_nice_json(indent=5) }}"
+    #debug: 
+    #  msg: "{{ paas_zone.content.split('\n') }}"
+
+  - name: copy output
+    copy:
+      #content: "{{ paas_zone.content.split('\n') }}"
+      content: >
+        "{{ paas_zone.json | to_nice_json }}"
+      dest: "/tmp/output_dbaas_paas_zone.txt"
+
+  - name: search paas guid
+    shell:
+      /bin/grep guid /tmp/output_dbaas_paas_zone.txt | /usr/bin/awk '{print $2}'| /usr/bin/sed 's/\"//g'|/usr/bin/sed 's/\,//g' > /tmp/output_dbaas_paas_zone_guid.txt;
+      dockerimg=`/usr/bin/docker ps | /usr/bin/grep nci-ansible-ui | /usr/bin/awk '{print $1}'`;
+      /usr/bin/docker cp /tmp/output_dbaas_paas_zone_guid.txt ${dockerimg}:/tmp/;
+    args:
+      executable: /bin/bash
+

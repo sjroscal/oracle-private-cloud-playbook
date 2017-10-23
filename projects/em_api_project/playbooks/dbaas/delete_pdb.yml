@@ -1,0 +1,22 @@
+---
+- hosts: em-ansible-host
+  tasks:
+  - name: delete pdb
+    uri:
+      url: https://osc-em13.oda.aus.osc:7802{{ lookup('file', '/tmp/output_dbaas_deploy_pdb_id.txt') }}
+      method: DELETE
+      headers:
+        Accept: "application/oracle.com.cloud.common.PluggableDbPlatformInstance+json"
+      return_content: yes
+      user: osc_anz_admin
+      password: welcome1
+      validate_certs: no
+      force_basic_auth: yes
+      body_format: json 
+      body: {"operation": "STARTUP"}
+    register: delete_pdb
+  - name: show list
+    #debug: var=delete_pdb
+    #debug: msg="{{ delete_pdb.json | to_nice_json(indent=5) }}"
+    debug: 
+      msg: "{{ delete_pdb.content }}"

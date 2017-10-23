@@ -1,0 +1,19 @@
+---
+- hosts: em-ansible-host
+  tasks:
+  - name: check job status
+    uri:
+      url: https://osc-em13.oda.aus.osc:7802{{ lookup('file', '/tmp/output_dbaas_deploy_pdb_id.txt') }}
+      method: GET
+      return_content: yes
+      user: osc_anz_admin
+      password: welcome1
+      validate_certs: no
+      force_basic_auth: yes
+      body_format: json 
+    register: check_job_satus
+  - name: show list
+    #debug: var=check_job_satus
+    #debug: msg="{{ check_job_satus.json | to_nice_json(indent=5) }}"
+    debug: 
+      msg: "{{ check_job_satus.content }}"
