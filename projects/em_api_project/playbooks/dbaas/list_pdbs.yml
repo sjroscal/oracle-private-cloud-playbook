@@ -1,0 +1,18 @@
+---
+- hosts: em-ansible-host
+  tasks:
+  - name: list pdbs
+    uri:
+      url: https://osc-em13.oda.aus.osc:7802/em/websvcs/restful/extws/cloudservices/service/v0/ssa/em/cloud/dbaas/zone/0129A72DB32D4199B59ABFA64085EAB3?service_instances
+      method: GET
+      return_content: yes
+      user: osc_anz_admin
+      password: welcome1
+      validate_certs: no
+      force_basic_auth: yes
+      body_format: json 
+    register: list_pdbs
+  - name: show pdb deployment status
+    debug: 
+      msg: "{{ list_pdbs.content }}"
+
